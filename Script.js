@@ -35,27 +35,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function toggleModoPenumbra() {
-    // Usamos toggle para la clase
-    document.body.classList.toggle('dark-mode');
-    
-    const activo = document.body.classList.contains('dark-mode');
-    localStorage.setItem('modo-penumbra', activo ? 'activado' : 'desactivado');
-    
-    // Feedback rápido en consola para ver que no hay retraso en la lógica
-    console.log("Modo Penumbra:", activo);
-}
-
-function toggleModoPenumbra() {
     const esModoOscuro = document.body.classList.toggle('dark-mode');
     localStorage.setItem('modo-penumbra', esModoOscuro ? 'activado' : 'desactivado');
 
-    // TRUCO PARA EL LAG: Forzar un pequeño redibujado
     const cuerpo = document.getElementById('cuerpo-texto');
     if (cuerpo) {
-        cuerpo.style.display = 'none';
-        cuerpo.offsetHeight; // Esto fuerza al navegador a recalcular
-        cuerpo.style.display = 'block';
+        // En lugar de display: none, usamos opacidad
+        // Esto mantiene el alto del contenedor y NO resetea el PDF
+        cuerpo.style.opacity = '0.99'; 
+        
+        // Forzamos el reflow (recalculo) sin destruir el scroll
+        cuerpo.offsetHeight; 
+        
+        cuerpo.style.opacity = '1';
     }
+    
+    console.log("Modo Penumbra:", esModoOscuro);
 }
 
 function toggleFullScreen() {
