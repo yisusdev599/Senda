@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senda - Panel de Lectura</title>
+    <link rel="icon" type="image/png" href="Senda.png">
+    <link rel="stylesheet" href="Styles.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Senda - Panel de Lectura</h2>
+            <p class="stats">ESPERANDO LIBRO...</p>
+        </div>
+
+        <div class="chapter-info">
+            <span>PROGRESO</span>
+            <span class="pct">0%</span>
+            <div class="progress-bg">
+                <div class="progress-fill" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <nav class="menu">
+            <ul>
+                <li id="btn-biblioteca"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-book-2">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M19 4v16h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12" />
+                            <path d="M19 16h-12a2 2 0 0 0 -2 2" />
+                            <path d="M9 8h6" />
+                        </svg></span> Mi Senda (Biblioteca)</li>
+                <li><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-chart-bar">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" />
+                            <path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" />
+                            <path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" />
+                            <path d="M4 20h14" />
+                        </svg></span> Mis Huellas (Estadísticas)</li>
+                <li id="btn-noche"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-moon">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path
+                                d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008" />
+                        </svg></span> Modo Penumbra </li>
+             
+                <li id="btn-calido"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-sun-low">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
+                            <path d="M4 12h.01" />
+                            <path d="M12 4v.01" />
+                            <path d="M20 12h.01" />
+                            <path d="M12 20v.01" />
+                            <path d="M6.31 6.31l-.01 -.01" />
+                            <path d="M17.71 6.31l-.01 -.01" />
+                            <path d="M17.7 17.7l.01 .01" />
+                            <path d="M6.3 17.7l.01 .01" />
+                        </svg></span> Descanso Visual (Cálido)</li>
+            </ul>
+        </nav>
+        <div id="modo-noche-overlay"></div>
+
+        <div class="sidebar-footer">
+            <label for="file-upload" class="btn-continue-upload">
+                SUBIR PDF / LIBRO
+            </label>
+            <input type="file" id="file-upload" accept="application/pdf" style="display: none;"
+                onchange="cargarNuevoPDF(event)">
+            <button class="btn-save" onclick="marcadorRapido()"></button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-nav">
+            <div class="brand-logo">Senda</div>
+            <nav class="nav-links">
+                <a href="#">LECTOR</a>
+                <a href="#">COLECCIONES</a>
+                <a href="#">DIARIO</a>
+                <button id="fullscreen-btn" class="fullscreen-btn" onclick="toggleFullScreen()"
+                    title="Alternar Pantalla Completa">⛶</button>
+                <span class="bookmark-icon">🔖</span>
+            </nav>
+        </header>
+
+        <article class="reading-area" id="visor-pdf-container">
+            <div id="instrucciones-iniciales" style="text-align: center; margin-top: 100px;">
+                <h1 class="book-title">Senda</h1>
+                <p>Selecciona un archivo PDF para comenzar la extracción de texto.</p>
+            </div>
+        </article>
+
+        <div class="floating-toolbar">
+            <button class="btn-prev" title="Página Anterior">
+                < </button>
+                    <div class="page-info"><span>PÁGINA --</span></div>
+                    <button class="btn-next" title="Siguiente Página"> > </button>
+
+                    <div class="divider"></div>
+
+                    <button class="btn-tt" title="Cambiar Tipografía">TT</button>
+
+                    <button class="btn-bookmark" title="Marcar página">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" />
+                        </svg>
+                    </button>
+
+                    <button class="btn-clean" onclick="cerrarLibroActual()" title="Cerrar Libro">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-xbox-x">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M12 21a9 9 0 0 0 9 -9a9 9 0 0 0 -9 -9a9 9 0 0 0 -9 9a9 9 0 0 0 9 9" />
+                            <path d="M9 8l6 8" />
+                            <path d="M15 8l-6 8" />
+                        </svg>
+                    </button>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

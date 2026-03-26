@@ -1,0 +1,552 @@
+:root {
+    --bg-main: #f9f7f2;      /* Crema muy claro */
+    --bg-sidebar: #f2ede4;   /* Crema un poco más oscuro */
+    --text-main: #1a1a1a;
+    --text-muted: #666;
+    --accent: #2d2926;       /* Negro/Marrón muy oscuro */
+}
+
+/* Suavizar el movimiento en todo el sitio */
+html {
+    scroll-behavior: smooth;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    display: flex;
+    min-height: 100vh;
+}
+
+/* --- SIDEBAR (Fija a la izquierda) --- */
+.sidebar {
+    width: 300px;
+    background-color: var(--bg-sidebar);
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(0,0,0,0.05);
+    position: fixed; /* Mantiene la barra quieta mientras el texto sube */
+    height: 100vh;
+    z-index: 10;
+}
+
+
+
+.sidebar-header h2 { font-size: 1.1rem; margin-bottom: 5px; }
+.stats { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+.chapter-info { margin-top: 50px; font-size: 0.8rem; font-weight: 600; }
+.progress-bg { background: #e2ddd3; height: 2px; margin-top: 10px; position: relative; width: 100%; }
+.progress-fill { background: var(--accent); height: 100%; transition: width 0.3s ease; }
+
+.menu { margin-top: 60px; }
+.menu ul { list-style: none; }
+.menu li { margin-bottom: 25px; font-size: 0.9rem; cursor: pointer; color: var(--text-muted); transition: 0.3s; }
+.menu li:hover { color: var(--text-main); }
+.menu li .icon { margin-right: 10px; }
+
+.sidebar-footer { margin-top: auto; }
+
+.btn-continue-upload {
+    display: block; width: 100%; background-color: #514c3c; color: #ffffff;
+    border: none; padding: 15px; border-radius: 8px; font-size: 0.8rem;
+    font-weight: bold; letter-spacing: 1.5px; text-align: center; cursor: pointer;
+    transition: transform 0.2s, background 0.3s; text-transform: uppercase;
+}
+.btn-continue-upload:hover { background-color: #514c3c; transform: translateY(-2px); }
+
+.btn-save {
+    background: transparent; color: var(--text-muted); border: none; width: 100%;
+    margin-top: 15px; font-size: 0.7rem; text-decoration: underline; cursor: pointer;
+}
+
+/* --- CONTENIDO PRINCIPAL (Donde ocurre el scroll) --- */
+.main-content {
+    margin-left: 300px; /* Deja espacio para la sidebar fija */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    min-height: 100vh;
+}
+
+.top-nav {
+    width: 100%; padding: 30px 50px; display: flex; justify-content: space-between; align-items: center;
+}
+.brand-logo { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.5rem; font-weight: 700; }
+.nav-links a { text-decoration: none; color: var(--text-main); font-size: 0.75rem; margin: 0 15px; letter-spacing: 1px; font-weight: 600; }
+
+/* --- ÁREA DE LECTURA --- */
+.reading-area { width: 100%; max-width: 850px; margin-top: 40px; }
+
+.text-canvas {
+    padding: 40px;
+    animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.book-subtitle { 
+    font-family: 'Playfair Display', serif; font-style: italic; text-align: center; 
+    color: var(--text-muted); margin-bottom: 15px; font-size: 1.1rem;
+}
+
+.book-title { 
+    font-family: 'Playfair Display', serif; font-size: 3.5rem; text-align: center; 
+    line-height: 1.1; margin-bottom: 60px; font-weight: 700;
+}
+
+.real-text-body {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    line-height: 1.9;
+    color: #2b2b2b;
+    text-align: justify;
+    max-width: 700px;
+    margin: 0 auto;
+    padding-bottom: 250px; /* Espacio extra al final para que la barra no tape el texto */
+}
+
+.real-text-body p { margin-bottom: 35px; }
+
+/* Letra Capital: Única en el inicio del libro */
+.real-text-body p:first-of-type::first-letter {
+    float: left;
+    font-size: 5.5rem;
+    line-height: 0.8;
+    padding-top: 10px;
+    padding-right: 15px;
+    font-weight: bold;
+    color: var(--accent);
+}
+
+/* --- BARRA FLOTANTE --- */
+.floating-toolbar {
+    position: fixed; bottom: 40px; background: #fdfcf9; border-radius: 12px;
+    padding: 12px 25px; display: flex; align-items: center; gap: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.03);
+    z-index: 100;
+}
+.floating-toolbar button { background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: 0.2s; }
+.floating-toolbar button:hover { transform: scale(1.1); color: #d4af37; }
+.page-num { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+/* --- TRANSICIÓN GLOBAL --- */
+body {
+    /* Transición suave para fondo y color de texto */
+    transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                color 0.5s ease;
+}
+
+/* Asegurar que los componentes principales también transicionen */
+.sidebar, 
+.main-content, 
+.floating-toolbar, 
+.top-nav,
+.sound-panel,
+.real-text-body {
+    transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                color 0.5s ease, 
+                border-color 0.5s ease,
+                box-shadow 0.5s ease;
+}
+
+/* --- TU CÓDIGO DE MODO PENUMBRA (REFORZADO) --- */
+body.dark-mode {
+    --bg-main: #1a1a1a;
+    --bg-sidebar: #121212;
+    --text-main: #e0dace;
+    --text-muted: #888;
+    --accent: #d4af37;
+    
+    background-color: var(--bg-main); /* Forzar aplicación para la animación */
+    color: var(--text-main);
+}
+
+body.dark-mode .sidebar { background-color: var(--bg-sidebar); }
+body.dark-mode .floating-toolbar { background: #252525; border-color: #333; }
+body.dark-mode .real-text-body { color: #ccc; }
+body.dark-mode .progress-bg { background: #333; }
+
+
+/* --- HEADER STICKY --- */
+.top-nav {
+    width: 100%;
+    padding: 20px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky; /* Se queda fijo al llegar al tope */
+    top: 0;
+    background-color: var(--bg-main); /* Evita que el texto se vea por debajo */
+    z-index: 1000;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+/* Efecto de sombra sutil cuando haces scroll */
+.top-nav.scrolled {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    padding: 15px 50px; /* Se hace un poco más pequeño */
+}
+
+/* --- MODO PANTALLA COMPLETA --- */
+/* Estilo para un botón que activará el modo */
+/* --- MEJORA DEL BOTÓN DE PANTALLA COMPLETA --- */
+.fullscreen-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    
+    /* USA LA VARIABLE DE TEXTO PRINCIPAL */
+    color: var(--text-main); 
+    
+    opacity: 0.8; /* Un poco más de opacidad inicial para que se vea */
+    transition: opacity 0.3s, color 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fullscreen-btn:hover {
+    opacity: 1;
+    color: var(--accent); /* Se vuelve dorado al pasar el mouse */
+    transform: scale(1.1);
+}
+
+/* Asegura que el contenedor de links y botones sea una fila perfecta */
+.nav-links {
+    display: flex;
+    align-items: center; /* Alineación vertical al centro */
+    gap: 15px;           /* Espacio uniforme entre elementos */
+}
+
+/* Ajuste específico para el botón de pantalla completa */
+.fullscreen-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--text-main);
+    display: flex;         /* Evita desplazamientos por line-height */
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    opacity: 0.8;
+    transition: transform 0.2s;
+}
+
+/* El marcador también debe estar alineado */
+.bookmark-icon {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+}
+
+
+/* Ajuste específico para cuando el header tiene scroll */
+.top-nav.scrolled .fullscreen-btn {
+    font-size: 1.1rem;
+}
+
+/* Ocultar sidebar en modo Zen (opcional pero recomendado) */
+body.zen-mode .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+}
+
+body.zen-mode .main-content {
+    margin-left: 0;
+    transition: margin-left 0.5s ease;
+}
+
+
+/* Transiciones suaves para el regreso de la interfaz */
+.sidebar {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-content {
+    transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Cuando NO estamos en zen-mode, aseguramos que la sidebar esté en su sitio */
+body:not(.zen-mode) .sidebar {
+    transform: translateX(0);
+}
+
+body:not(.zen-mode) .main-content {
+    margin-left: 300px;
+}
+
+/* Control global de iconos en la barra flotante */
+.floating-toolbar button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-main); /* Cambia de negro a crema automáticamente */
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.floating-toolbar button svg {
+    /* Esto obliga al SVG a usar el color del botón */
+    stroke: currentColor; 
+}
+
+.floating-toolbar button:hover {
+    opacity: 1;
+    color: var(--accent); /* Dorado al pasar el mouse */
+    transform: scale(1.1);
+}
+
+/* Ajuste de la línea separadora en Modo Penumbra */
+body.dark-mode .floating-toolbar div[style*="border-left"] {
+    border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+
+/* Estado NORMAL (Aseguramos que vuelva a 300px) */
+.sidebar {
+    transform: translateX(0);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-content {
+    margin-left: 300px !important; /* El !important aquí obliga al retorno */
+    transition: margin-left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Estado ZEN (Solo cuando la clase existe) */
+body.zen-mode .sidebar {
+    transform: translateX(-100%);
+}
+
+body.zen-mode .main-content {
+    margin-left: 0 !important;
+}
+
+.page-break {
+    display: block;
+    height: 1px;
+    margin-top: 40px;
+    border-top: 1px dashed rgba(0,0,0,0.1); /* Una línea sutil para saber dónde termina la pág */
+    position: relative;
+}
+
+/* En modo noche, que la línea sea más oscura */
+body.dark-mode .page-break {
+    border-top: 1px dashed rgba(255,255,255,0.1);
+}
+
+.sound-popover-container {
+    position: relative;
+    display: inline-block;
+}
+
+.sound-panel {
+    display: none; /* Oculto por defecto */
+    position: absolute;
+    bottom: 60px; /* Aparece arriba de la barra */
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-color, #fff);
+    border: 1px solid rgba(0,0,0,0.1);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    width: 120px;
+    z-index: 1000;
+}
+
+.sound-panel.active {
+    display: block;
+    animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.sound-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.sound-item:last-child { margin-bottom: 0; }
+
+.sound-item input[type="range"] {
+    width: 100%;
+    accent-color: #d4af37;
+}
+
+/* Ajuste para modo oscuro */
+body.dark-mode .sound-panel {
+    background: #1e1e1e;
+    border-color: rgba(255,255,255,0.1);
+}
+
+@keyframes pulse-gold {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); color: #d4af37; }
+    100% { transform: scale(1); }
+}
+
+.dark-mode-active-anim {
+    animation: pulse-gold 0.4s ease-in-out;
+}
+
+/* --- CONFIGURACIÓN MAESTRA MODO OSCURO --- */
+body.dark-mode {
+    background-color: #1a1a1a !important;
+    color: #e0dace !important; /* Color crema para que no lastime la vista */
+}
+
+/* Forzar que el contenedor del libro y el texto se vean */
+body.dark-mode #visor-pdf-container,
+body.dark-mode .reading-area,
+body.dark-mode .text-canvas,
+body.dark-mode #cuerpo-texto,
+body.dark-mode p, 
+body.dark-mode span {
+    color: #e0dace !important;
+    background-color: transparent !important;
+}
+
+/* La barra flotante debe resaltar */
+body.dark-mode .floating-toolbar {
+    background: #2d2d2d !important;
+    border: 1px solid #444 !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+}
+
+/* Botones de la barra en modo oscuro */
+body.dark-mode .floating-toolbar button {
+    color: #e0dace !important;
+}
+
+/* Los sliders del mixer de sonido */
+body.dark-mode .sound-panel {
+    background: #252525 !important;
+    color: #fff !important;
+}
+
+/* Contenedor base optimizado */
+.real-text-body {
+    contain: content; /* TRUCO CLAVE: Ayuda al navegador a no recalcular lo que está fuera de vista */
+    will-change: font-size; /* Prepara a la GPU */
+}
+
+/* Modo 0: Normal */
+.modo-0 {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* Modo 1: Grande (Enfoque) */
+.modo-1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.4rem;
+    line-height: 1.6;
+}
+
+/* Modo 2: Serif (Lectura profunda) */
+.modo-2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    line-height: 1.9;
+}
+
+/* Si realmente quieres una transición, úsala solo para la opacidad, no para el tamaño */
+.real-text-body {
+    transition: opacity 0.2s ease;
+}
+
+/* --- 1. MODO CLARO (BASE) --- */
+:root {
+    --bg-main: #ffffff;
+    --text-main: #1a1a1a;
+    --accent: #d4af37;
+}
+
+/* --- 2. MODO DESCANSO (SEPIA/PAPEL) --- */
+body.modo-descanso {
+    --bg-main: #f4ecd8; /* Color papel antiguo */
+    --text-main: #433422; /* Café oscuro, no negro */
+}
+
+/* --- 3. MODO PENUMBRA (OSCURO) --- */
+body.dark-mode {
+    --bg-main: #1a1a1a;
+    --text-main: #e0dace;
+}
+
+/* --- 4. MODO PENUMBRA + DESCANSO (OSCURO CÁLIDO) --- */
+body.dark-mode.modo-descanso {
+    --bg-main: #1c1b17; /* Negro con toque café */
+    --text-main: #c7b299; /* Texto más apagado y cálido */
+}
+
+/* --- APLICACIÓN GLOBAL (SIN LAG) --- */
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    transition: background-color 0.3s ease; /* Transición rápida para evitar tirones */
+}
+
+.real-text-body, .text-canvas {
+    background-color: transparent !important;
+    color: var(--text-main) !important;
+}
+
+.sidebar, .floating-toolbar {
+    background-color: var(--bg-main);
+    border-color: rgba(0,0,0,0.1);
+}
+
+/* Ajuste para la lista del menú */
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+nav li {
+    display: flex;
+    align-items: center; /* Alineación vertical perfecta */
+    padding: 12px 0;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+}
+
+/* LA CLAVE: El contenedor del icono */
+.icon {
+    width: 32px;           /* Ancho fijo para que el texto siempre empiece en el mismo lugar */
+    display: flex;
+    justify-content: flex-start; /* Alinea el icono al inicio del bloque de 32px */
+    margin-right: 12px;    /* Espacio entre icono y texto */
+    flex-shrink: 0;        /* Evita que el icono se deforme */
+}
+
+.icon svg {
+    width: 22px;           /* Tamaño uniforme para todos los SVGs */
+    height: 22px;
+}
+
+/* Efecto hover opcional para que se sienta vivo */
+nav li:hover {
+    color: #efb810;
+}
